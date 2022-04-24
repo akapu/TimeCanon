@@ -41,9 +41,9 @@ function love.update(dt)
             y = love.mouse.getY() - W_HEIGHT/2
         }
 
-        dotProduct = initialPos.x * pos.x + initialPos.y * pos.y
-        initialPosLength = math.sqrt(initialPos.x ^ 2 + initialPos.y ^ 2)
-        posLength = math.sqrt(pos.x ^ 2 + pos.y ^ 2)
+        local dotProduct = initialPos.x * pos.x + initialPos.y * pos.y
+        local initialPosLength = math.sqrt(initialPos.x ^ 2 + initialPos.y ^ 2)
+        local posLength = math.sqrt(pos.x ^ 2 + pos.y ^ 2)
 
         angle = math.acos(dotProduct / (initialPosLength * posLength))
 
