@@ -2,19 +2,15 @@ W_WIDTH, W_HEIGHT = love.graphics.getDimensions()
 WIDTH = 75
 HEIGHT = 25
 
-function love.conf(t)
-	t.console = true
-end
-
 function love.load()
     love.window.setTitle('TimeCanon')
 
     love.keyboard.keysPressed = {}
     love.mouse.isPressed = nil
+    
 end
 
-function love.mousePressed(x, y, button, istouch)
-    print("pressed")
+function love.mousepressed(x, y, button, istouch)
     love.mouse.isPressed = {
         x = x - W_WIDTH/2,
         y = y - W_HEIGHT/2,
@@ -45,14 +41,11 @@ function love.update(dt)
             y = love.mouse.getY() - W_HEIGHT/2
         }
 
-        print(initialPos.x, initialPos.y)
-        print(pos.x, pos.y)
-
         dotProduct = initialPos.x * pos.x + initialPos.y * pos.y
         initialPosLength = math.sqrt(initialPos.x ^ 2 + initialPos.y ^ 2)
         posLength = math.sqrt(pos.x ^ 2 + pos.y ^ 2)
 
-        angle = math.acos(dotProduct / (initialPosLength * posLenght))
+        angle = math.acos(dotProduct / (initialPosLength * posLength))
 
     end
 
