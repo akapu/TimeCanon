@@ -1,3 +1,5 @@
+DEBUG = true
+
 W_WIDTH, W_HEIGHT = love.graphics.getDimensions()
 WIDTH = 75
 HEIGHT = 25
@@ -30,6 +32,10 @@ end
 function love.keypressed(key)
     if key == 'escape' then
         love.event.quit()
+    end
+
+    if key == 'rctrl' and DEBUG then
+        debug.debug()
     end
 
     love.keyboard.keysPressed[key] = true
@@ -71,9 +77,9 @@ function love.update(dt)
     end
 
     for i = 1, #bullets do
-        if bullets[i].to_remove then
+        if bullets[i] and bullets[i].to_remove then
 
-            for j = i, #bullets - 1 do 
+            for j = i, #bullets do 
                 bullets[j] = bullets[j + 1]
             end
 
@@ -109,9 +115,9 @@ function love.update(dt)
     end
 
     for i = 1, #enemies do
-        if enemies[i].dead then
+        if enemies[i] and enemies[i].dead then
 
-            for j = i, #enemies - 1 do 
+            for j = i, #enemies do 
                 enemies[j] = enemies[j + 1]
             end
         end
