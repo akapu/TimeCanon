@@ -128,6 +128,10 @@ function love.update(dt)
     end
 
     angle = angle + current_speed * dt
+
+    if math.abs(angle) > 2 * math.pi then
+        angle = 0
+    end
 end
 
 function love.draw()
