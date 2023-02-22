@@ -48,7 +48,9 @@ function love.update(dt)
             dir = {
                 x = math.cos(angle),
                 y = math.sin(angle)
-            }}
+            },
+            to_remove = false
+        }
         
         timer = 0
     end 
@@ -56,6 +58,26 @@ function love.update(dt)
     for _, bullet in pairs(bullets) do
         bullet.pos.x = bullet.pos.x + bullet.dir.x * BULLET_SPEED * dt
         bullet.pos.y = bullet.pos.y + bullet.dir.y * BULLET_SPEED * dt
+
+        local x = bullet.pos.x
+        local fit_horizontally = x >= 0 and x <= W_WIDTH
+        
+        local y = bullet.pos.y
+        local fit_vertically = y >= 0 and y <= W_HEIGHT
+
+        if not fit_horizontally or not fit_vertically then
+            bullet.to_remove = true
+        end
+    end
+
+    for i = 1, #bullets do
+        if bullets[i].to_remove then
+
+            for j = i, #bullets - 1 do 
+                bullets[j] = bullets[j + 1]
+            end
+
+        end
     end
 
     timer_enemy = timer_enemy + dt
