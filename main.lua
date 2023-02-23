@@ -87,12 +87,17 @@ function love.update(dt)
     timer_enemy = timer_enemy + dt
 
     if timer_enemy > ENEMY_PERIOD then
+        local position = {
+            x = love.math.random(0, W_WIDTH),
+            y = love.math.random(0, W_HEIGHT)
+        }
+
         enemies[#enemies + 1] = {
-            pos = {
-                x = love.math.random(0, W_WIDTH),
-                y = love.math.random(0, W_HEIGHT)
-            },
-            dir = random_dir(),
+            pos = position,
+            dir = normalize({
+                x = W_WIDTH / 2 - position.x,
+                y = W_HEIGHT / 2 - position.y
+            }),
             dead = false
         }
 
@@ -160,17 +165,6 @@ function love.draw()
 	love.graphics.pop()
 end
 
-
-function random_dir()
-    local angle = love.math.random(0, 2 * math.pi)
-
-    return {
-        x = math.cos(angle),
-        y = math.sin(angle)
-    }
-end
-
-
 function collide(first, second)
     local vector_between = {
         x = first.pos.x - second.pos.x,
@@ -184,4 +178,13 @@ function collide(first, second)
     end
 
     return false
+end
+
+function normalize(vector)
+    local length = (vector.x ^ 2 + vector.y ^ 2) ^ 0.5
+
+    vector.x = vector.x / length
+    vector.y = vector.y / length
+
+    return vector
 end
