@@ -12,6 +12,7 @@ BULLET_PERIOD = 1
 ENEMY_PERIOD = 1
 ENEMY_SPEED = 20
 ENEMY_SIZE = 24
+ENEMY_DAMAGE_PERIOD = 1
 
 function love.load()
     love.window.setTitle('TimeCanon')
@@ -22,11 +23,23 @@ function love.load()
 
     timer = 0
 
+    canon = {pos = {
+        x = W_WIDTH / 2,
+        y = W_HEIGHT / 2
+    }}
+
     bullets = {}
 
     enemies = {}
 
     timer_enemy = 0
+
+    health = 10
+
+    idle_dir = {
+        x = 0,
+        y = 0
+    }
 end
 
 function love.keypressed(key)
@@ -100,7 +113,8 @@ function love.update(dt)
                 x = W_WIDTH / 2 - position.x,
                 y = W_HEIGHT / 2 - position.y
             }),
-            dead = false
+            dead = false,
+            damage_timer = 0
         }
 
         timer_enemy = 0
@@ -115,6 +129,16 @@ function love.update(dt)
                 enemy.dead = true
 
                 break
+            end
+        end
+
+        if collide(enemy, canon) then
+            enemy.dir = idle_dir
+
+            enemy.damage_timer = enemy.damage_timer + dt
+
+            if enemy.damage_timer > ENEMY_DAMAGE_PERIOD then
+                health = health - 1
             end
         end
     end
