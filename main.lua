@@ -139,6 +139,8 @@ function love.update(dt)
 
             if enemy.damage_timer > ENEMY_DAMAGE_PERIOD then
                 health = health - 1
+
+                enemy.damage_timer = 0
             end
         end
     end
@@ -189,6 +191,8 @@ function love.draw()
 
 	love.graphics.rectangle('fill', -WIDTH/2, -HEIGHT/2, WIDTH, HEIGHT)
 	love.graphics.pop()
+
+    love.graphics.print("health: " .. health, 0, 0, 0, 2)
 end
 
 function collide(first, second)
