@@ -14,51 +14,9 @@ ENEMY_SPEED = 20
 ENEMY_SIZE = 24
 ENEMY_DAMAGE_PERIOD = 1
 
-function love.load()
-    love.window.setTitle('TimeCanon')
+play_state = {}
 
-    love.keyboard.keysPressed = {}
-
-    angle = 0
-
-    timer = 0
-
-    canon = {pos = {
-        x = W_WIDTH / 2,
-        y = W_HEIGHT / 2
-    }}
-
-    bullets = {}
-
-    enemies = {}
-
-    timer_enemy = 0
-
-    health = 10
-
-    idle_dir = {
-        x = 0,
-        y = 0
-    }
-end
-
-function love.keypressed(key)
-    if key == 'escape' then
-        love.event.quit()
-    end
-
-    if key == 'rctrl' and DEBUG then
-        debug.debug()
-    end
-
-    love.keyboard.keysPressed[key] = true
-end
-
-function love.keyreleased(key)
-    love.keyboard.keysPressed[key] = false
-end
-
-function love.update(dt)
+function play_state:update(dt)
     timer = timer + dt
 
     if timer > BULLET_PERIOD then
@@ -140,9 +98,63 @@ function love.update(dt)
             if enemy.damage_timer > ENEMY_DAMAGE_PERIOD then
                 health = health - 1
 
+                if health == 0 then
+                    state_machine.state = game_over_state
+                end
+
                 enemy.damage_timer = 0
             end
         end
+    end
+
+    function play_state:draw()
+        for _, bullet in pairs(bullets) do
+            love.graphics.circle('fill', bullet.pos.x, bullet.pos.y, BULLET_SIZE)
+        end
+
+        love.graphics.setColor(1, 0, 0, 1)
+
+        for _, enemy in pairs(enemies) do
+            love.graphics.circle('fill', enemy.pos.x, enemy.pos.y, ENEMY_SIZE)
+        end
+
+        love.graphics.setColor(1, 1, 1, 1)
+
+        love.graphics.push()
+        love.graphics.translate(W_WIDTH/2, W_HEIGHT/2)
+
+        love.graphics.rotate(angle)
+
+        love.graphics.rectangle('fill', -WIDTH/2, -HEIGHT/2, WIDTH, HEIGHT)
+        love.graphics.pop()
+
+        love.graphics.print("health: " .. health, 0, 0, 0, 2)
+    end
+
+    game_over_state = {
+        timer = 0,
+        time_to_transition = 2,
+        alpha = 0
+    }
+
+    function game_over_state:update(dt)
+        if self.timer < self.time_to_transition then
+            self.timer = self.timer + dt
+
+            if self.timer > self.time_to_transition then
+                self.timer = self.time_to_transition
+            end
+
+            self.alpha = self.timer / self.time_to_transition
+        end
+    end
+
+    function game_over_state:draw()
+        love.graphics.setColor(1, 0, 0, self.alpha)
+
+        love.graphics.rectangle('fill', 0, 0, W_WIDTH, W_HEIGHT)
+
+        love.graphics.setColor(1, 1, 1, 1)
     end
 
     for i = 1, #enemies do
@@ -171,28 +183,68 @@ function love.update(dt)
     end
 end
 
+function love.load()
+    love.window.setTitle('TimeCanon')
+
+    love.keyboard.keysPressed = {}
+
+    angle = 0
+
+    timer = 0
+
+    canon = {pos = {
+        x = W_WIDTH / 2,
+        y = W_HEIGHT / 2
+    }}
+
+    bullets = {}
+
+    enemies = {}
+
+    timer_enemy = 0
+
+    health = 10
+
+    idle_dir = {
+        x = 0,
+        y = 0
+    }
+
+    state_machine = {
+        state = play_state
+    }
+
+    function state_machine:update(dt)
+        self.state:update(dt)
+    end
+
+    function state_machine:draw()
+        self.state:draw()
+    end
+end
+
+function love.keypressed(key)
+    if key == 'escape' then
+        love.event.quit()
+    end
+
+    if key == 'rctrl' and DEBUG then
+        debug.debug()
+    end
+
+    love.keyboard.keysPressed[key] = true
+end
+
+function love.keyreleased(key)
+    love.keyboard.keysPressed[key] = false
+end
+
+function love.update(dt)
+    state_machine:update(dt)
+end
+
 function love.draw()
-    for _, bullet in pairs(bullets) do
-        love.graphics.circle('fill', bullet.pos.x, bullet.pos.y, BULLET_SIZE)
-    end
-
-    love.graphics.setColor(1, 0, 0, 1)
-
-    for _, enemy in pairs(enemies) do
-        love.graphics.circle('fill', enemy.pos.x, enemy.pos.y, ENEMY_SIZE)
-    end
-
-    love.graphics.setColor(1, 1, 1, 1)
-
-    love.graphics.push()
-	love.graphics.translate(W_WIDTH/2, W_HEIGHT/2)
-
-    love.graphics.rotate(angle)
-
-	love.graphics.rectangle('fill', -WIDTH/2, -HEIGHT/2, WIDTH, HEIGHT)
-	love.graphics.pop()
-
-    love.graphics.print("health: " .. health, 0, 0, 0, 2)
+    state_machine:draw()
 end
 
 function collide(first, second)
