@@ -17,9 +17,11 @@ ENEMY_DAMAGE_PERIOD = 1
 play_state = {}
 
 function play_state:update(dt)
-    timer = timer + dt
+    if not canon.moving then
+        timer = timer + dt
+    end
 
-    if timer > BULLET_PERIOD then
+    if timer > BULLET_PERIOD and not canon.moving then
         bullets[#bullets + 1] = {
             pos = {x = W_WIDTH/2, y = W_HEIGHT/2},
             dir = {
@@ -176,6 +178,14 @@ function play_state:update(dt)
         current_speed = current_speed + ROTATION_SPEED
     end
 
+    if current_speed == 0 then
+        canon.moving = false
+    else
+        canon.moving = true
+
+        timer = 0
+    end
+
     angle = angle + current_speed * dt
 
     if math.abs(angle) > 2 * math.pi then
@@ -192,10 +202,13 @@ function love.load()
 
     timer = 0
 
-    canon = {pos = {
-        x = W_WIDTH / 2,
-        y = W_HEIGHT / 2
-    }}
+    canon = {
+        pos = {
+            x = W_WIDTH / 2,
+            y = W_HEIGHT / 2
+        },
+        moving = false
+    }
 
     bullets = {}
 
