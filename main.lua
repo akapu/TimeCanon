@@ -9,10 +9,12 @@ BULLET_SIZE = 24
 BULLET_SPEED = 30
 BULLET_PERIOD = 1
 
-ENEMY_PERIOD = 1
+ENEMY_PERIOD = 3
 ENEMY_SPEED = 20
 ENEMY_SIZE = 24
 ENEMY_DAMAGE_PERIOD = 1
+
+LEVEL_UP_DURATION = 2
 
 play_state = {}
 
@@ -107,6 +109,8 @@ function play_state:update(dt)
                 enemy.damage_timer = 0
             end
         end
+
+        level_up:update(dt)
     end
 
     function play_state:draw()
@@ -131,6 +135,8 @@ function play_state:update(dt)
         love.graphics.pop()
 
         love.graphics.print("health: " .. health, 0, 0, 0, 2)
+
+        level_up:draw()
     end
 
     game_over_state = {
@@ -189,6 +195,10 @@ function play_state:update(dt)
     angle = angle + current_speed * dt
 
     if math.abs(angle) > 2 * math.pi then
+        if angle > 0 then
+            level_up.active = true
+        end
+
         angle = 0
     end
 end
@@ -233,6 +243,37 @@ function love.load()
 
     function state_machine:draw()
         self.state:draw()
+    end
+
+    level_up = {
+        timer = 0,
+        active = false,
+        alpha = 0
+    }
+
+    function level_up:update(dt)
+        if not self.active then
+            return
+        end
+
+        self.timer = self.timer + dt
+
+        if self.timer < (LEVEL_UP_DURATION / 2) then
+            self.alpha = self.timer / (LEVEL_UP_DURATION / 2)
+        elseif self.timer < LEVEL_UP_DURATION then
+            local time_remaing = LEVEL_UP_DURATION - self.timer
+            self.alpha = time_remaing / (LEVEL_UP_DURATION / 2)
+        else
+            self.active = false
+            self.timer = 0
+            self.alpha = 0
+        end
+    end
+
+    function level_up:draw()
+        love.graphics.setColor(0, 1, 0, self.alpha)
+        love.graphics.rectangle('fill', 0, 0, W_WIDTH, W_HEIGHT)
+        love.graphics.setColor(1, 1, 1, 1)
     end
 end
 
