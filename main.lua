@@ -3,7 +3,6 @@ DEBUG = true
 W_WIDTH, W_HEIGHT = love.graphics.getDimensions()
 WIDTH = 75
 HEIGHT = 25
-ROTATION_SPEED = math.pi / 6
 
 BULLET_SIZE = 24
 BULLET_SPEED = 30
@@ -177,11 +176,11 @@ function play_state:update(dt)
     local current_speed = 0
 
     if love.keyboard.keysPressed['left'] then
-        current_speed = current_speed - ROTATION_SPEED
+        current_speed = current_speed - canon.rotation_speed
     end
 
     if love.keyboard.keysPressed['right'] then
-        current_speed = current_speed + ROTATION_SPEED
+        current_speed = current_speed + canon.rotation_speed
     end
 
     if current_speed == 0 then
@@ -196,7 +195,7 @@ function play_state:update(dt)
 
     if math.abs(angle) > 2 * math.pi then
         if angle > 0 then
-            level_up.active = true
+            level_up:activate(canon)
         end
 
         angle = 0
@@ -217,7 +216,8 @@ function love.load()
             x = W_WIDTH / 2,
             y = W_HEIGHT / 2
         },
-        moving = false
+        moving = false,
+        rotation_speed = math.pi / 6
     }
 
     bullets = {}
@@ -250,6 +250,12 @@ function love.load()
         active = false,
         alpha = 0
     }
+
+    function level_up:activate()
+        self.active = true
+
+        rotation_speed_up(canon)
+    end
 
     function level_up:update(dt)
         if not self.active then
@@ -323,4 +329,9 @@ function normalize(vector)
     vector.y = vector.y / length
 
     return vector
+end
+
+function rotation_speed_up(canon)
+    local UPGRADE = math.pi / 24
+    canon.rotation_speed = canon.rotation_speed + UPGRADE
 end
