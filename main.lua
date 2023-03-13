@@ -308,7 +308,7 @@ function love.draw()
 end
 
 function collide(first, second)
-    if distance(first, second) < ENEMY_SIZE + BULLET_SIZE - 5 then
+    if distance(first.pos, second.pos) < ENEMY_SIZE + BULLET_SIZE - 5 then
         return true
     end
 
@@ -330,8 +330,8 @@ function rotation_speed_up(canon)
 end
 
 function distance(first, second)
-    local x = first.pos.x - second.pos.x
-    local y = first.pos.y - second.pos.y
+    local x = first.x - second.x
+    local y = first.y - second.y
 
     return (x^2 + y^2) ^ 0.5
 end
