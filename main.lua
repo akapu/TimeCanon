@@ -14,6 +14,7 @@ ENEMY_SIZE = 24
 ENEMY_DAMAGE_PERIOD = 1
 
 LEVEL_UP_DURATION = 2
+NO_SPAWN_RADIUS = W_WIDTH * 0.15
 
 play_state = {}
 
@@ -63,9 +64,12 @@ function play_state:update(dt)
     timer_enemy = timer_enemy + dt
 
     if timer_enemy > ENEMY_PERIOD then
+        local angle = love.math.random(0, 2 * math.pi)
+        local radius = love.math.random(NO_SPAWN_RADIUS, W_WIDTH)
+
         local position = {
-            x = love.math.random(0, W_WIDTH),
-            y = love.math.random(0, W_HEIGHT)
+            x = math.cos(angle) * radius + W_WIDTH/2,
+            y = math.sin(angle) * radius + W_HEIGHT/2 
         }
 
         enemies[#enemies + 1] = {
