@@ -308,14 +308,7 @@ function love.draw()
 end
 
 function collide(first, second)
-    local vector_between = {
-        x = first.pos.x - second.pos.x,
-        y = first.pos.y - second.pos.y
-    }
-
-    local dist = (vector_between.x ^ 2 + vector_between.y ^ 2) ^ 0.5
-
-    if dist < ENEMY_SIZE + BULLET_SIZE - 5 then
+    if distance(first, second) < ENEMY_SIZE + BULLET_SIZE - 5 then
         return true
     end
 
@@ -334,4 +327,11 @@ end
 function rotation_speed_up(canon)
     local UPGRADE = math.pi / 24
     canon.rotation_speed = canon.rotation_speed + UPGRADE
+end
+
+function distance(first, second)
+    local x = first.pos.x - second.pos.x
+    local y = first.pos.y - second.pos.y
+
+    return (x^2 + y^2) ^ 0.5
 end
