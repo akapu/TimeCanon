@@ -207,6 +207,10 @@ function play_state:update(dt)
 end
 
 function love.load()
+    love.window.setMode(W_WIDTH, W_HEIGHT, {
+        msaa = 2
+    })
+
     love.window.setTitle('TimeCanon')
 
     love.keyboard.keysPressed = {}
