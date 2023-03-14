@@ -4,7 +4,7 @@ W_WIDTH, W_HEIGHT = love.graphics.getDimensions()
 WIDTH = 75
 HEIGHT = 25
 
-BULLET_SIZE = 24
+BULLET_SIZE = 5
 BULLET_SPEED = 30
 BULLET_PERIOD = 1
 
