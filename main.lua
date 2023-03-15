@@ -244,7 +244,7 @@ function love.load()
         },
         size = math.sqrt((WIDTH/2)^2 + (HEIGHT/2)^2),
         moving = false,
-        rotation_speed = math.pi / 6
+        rotation_speed = math.pi/3
     }
 
     bullets = {}
