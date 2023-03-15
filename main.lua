@@ -26,12 +26,17 @@ function play_state:update(dt)
     end
 
     if timer > BULLET_PERIOD and not canon.moving then
+        local direction = {
+            x = math.cos(angle),
+            y = math.sin(angle)
+        }
+
         bullets[#bullets + 1] = {
-            pos = {x = W_WIDTH/2, y = W_HEIGHT/2},
-            dir = {
-                x = math.cos(angle),
-                y = math.sin(angle)
+            pos = {
+                x = W_WIDTH/2 + direction.x * (WIDTH/2 - BULLET_SIZE/2),
+                y = W_HEIGHT/2 + direction.y * (WIDTH/2 - BULLET_SIZE/2)
             },
+            dir = direction,
             to_remove = false,
             size = BULLET_SIZE
         }
