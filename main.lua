@@ -71,7 +71,7 @@ function play_state:update(dt)
 
     if timer_enemy > ENEMY_PERIOD then
         local angle = love.math.random(0, 2 * math.pi)
-        local radius = love.math.random(NO_SPAWN_RADIUS, W_WIDTH)
+        local radius = love.math.random(NO_SPAWN_RADIUS, W_WIDTH/2)
 
         local position = {
             x = math.cos(angle) * radius + W_WIDTH/2,
