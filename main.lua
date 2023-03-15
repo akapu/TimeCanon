@@ -30,7 +30,8 @@ function play_state:update(dt)
                 x = math.cos(angle),
                 y = math.sin(angle)
             },
-            to_remove = false
+            to_remove = false,
+            size = BULLET_SIZE
         }
         
         timer = 0
@@ -53,11 +54,9 @@ function play_state:update(dt)
 
     for i = 1, #bullets do
         if bullets[i] and bullets[i].to_remove then
-
             for j = i, #bullets do 
                 bullets[j] = bullets[j + 1]
             end
-
         end
     end
 
@@ -79,6 +78,7 @@ function play_state:update(dt)
                 y = W_HEIGHT / 2 - position.y
             }),
             dead = false,
+            size = ENEMY_SIZE,
             damage_timer = 0
         }
 
@@ -91,7 +91,18 @@ function play_state:update(dt)
 
         for _, bullet in pairs(bullets) do
             if collide(enemy, bullet) then
-                enemy.dead = true
+                local diff = enemy.size - bullet.size
+
+                if diff < 0 then
+                    enemy.dead = true
+                    bullet.size = math.abs(diff)
+                elseif diff > 0 then
+                    bullet.to_remove = true
+                    enemy.size = math.abs(diff)
+                else
+                    enemy.dead = true
+                    bullet.to_remove = true
+                end
 
                 break
             end
@@ -114,58 +125,6 @@ function play_state:update(dt)
         end
 
         level_up:update(dt)
-    end
-
-    function play_state:draw()
-        for _, bullet in pairs(bullets) do
-            love.graphics.circle('fill', bullet.pos.x, bullet.pos.y, BULLET_SIZE)
-        end
-
-        love.graphics.setColor(1, 0, 0, 1)
-
-        for _, enemy in pairs(enemies) do
-            love.graphics.circle('fill', enemy.pos.x, enemy.pos.y, ENEMY_SIZE)
-        end
-
-        love.graphics.setColor(1, 1, 1, 1)
-
-        love.graphics.push()
-        love.graphics.translate(W_WIDTH/2, W_HEIGHT/2)
-
-        love.graphics.rotate(angle)
-
-        love.graphics.rectangle('fill', -WIDTH/2, -HEIGHT/2, WIDTH, HEIGHT)
-        love.graphics.pop()
-
-        love.graphics.print("health: " .. health, 0, 0, 0, 2)
-
-        level_up:draw()
-    end
-
-    game_over_state = {
-        timer = 0,
-        time_to_transition = 2,
-        alpha = 0
-    }
-
-    function game_over_state:update(dt)
-        if self.timer < self.time_to_transition then
-            self.timer = self.timer + dt
-
-            if self.timer > self.time_to_transition then
-                self.timer = self.time_to_transition
-            end
-
-            self.alpha = self.timer / self.time_to_transition
-        end
-    end
-
-    function game_over_state:draw()
-        love.graphics.setColor(1, 0, 0, self.alpha)
-
-        love.graphics.rectangle('fill', 0, 0, W_WIDTH, W_HEIGHT)
-
-        love.graphics.setColor(1, 1, 1, 1)
     end
 
     for i = 1, #enemies do
@@ -204,6 +163,58 @@ function play_state:update(dt)
 
         angle = 0
     end
+end
+
+function play_state:draw()
+    for _, bullet in pairs(bullets) do
+        love.graphics.circle('fill', bullet.pos.x, bullet.pos.y, bullet.size)
+    end
+
+    love.graphics.setColor(1, 0, 0, 1)
+
+    for _, enemy in pairs(enemies) do
+        love.graphics.circle('fill', enemy.pos.x, enemy.pos.y, enemy.size)
+    end
+
+    love.graphics.setColor(1, 1, 1, 1)
+
+    love.graphics.push()
+    love.graphics.translate(W_WIDTH/2, W_HEIGHT/2)
+
+    love.graphics.rotate(angle)
+
+    love.graphics.rectangle('fill', -WIDTH/2, -HEIGHT/2, WIDTH, HEIGHT)
+    love.graphics.pop()
+
+    love.graphics.print("health: " .. health, 0, 0, 0, 2)
+
+    level_up:draw()
+end
+
+game_over_state = {
+    timer = 0,
+    time_to_transition = 2,
+    alpha = 0
+}
+
+function game_over_state:update(dt)
+    if self.timer < self.time_to_transition then
+        self.timer = self.timer + dt
+
+        if self.timer > self.time_to_transition then
+            self.timer = self.time_to_transition
+        end
+
+        self.alpha = self.timer / self.time_to_transition
+    end
+end
+
+function game_over_state:draw()
+    love.graphics.setColor(1, 0, 0, self.alpha)
+
+    love.graphics.rectangle('fill', 0, 0, W_WIDTH, W_HEIGHT)
+
+    love.graphics.setColor(1, 1, 1, 1)
 end
 
 function love.load()
