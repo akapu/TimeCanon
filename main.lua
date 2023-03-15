@@ -242,6 +242,7 @@ function love.load()
             x = W_WIDTH / 2,
             y = W_HEIGHT / 2
         },
+        size = math.sqrt((WIDTH/2)^2 + (HEIGHT/2)^2),
         moving = false,
         rotation_speed = math.pi / 6
     }
@@ -334,7 +335,7 @@ function love.draw()
 end
 
 function collide(first, second)
-    if distance(first.pos, second.pos) < ENEMY_SIZE + BULLET_SIZE - 5 then
+    if distance(first.pos, second.pos) < first.size + second.size then
         return true
     end
 
