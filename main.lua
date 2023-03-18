@@ -16,7 +16,8 @@ ENEMY_SIZE = 3 * SIZE_STEP
 ENEMY_DAMAGE_PERIOD = 1
 
 LEVEL_UP_DURATION = 2
-NO_SPAWN_RADIUS = W_WIDTH * 0.15
+NO_SPAWN_RADIUS = W_WIDTH * 0.25
+
 
 play_state = {}
 
@@ -244,7 +245,7 @@ function love.load()
         },
         size = math.sqrt((WIDTH/2)^2 + (HEIGHT/2)^2),
         moving = false,
-        rotation_speed = math.pi/3
+        rotation_speed = math.pi/2
     }
 
     bullets = {}
