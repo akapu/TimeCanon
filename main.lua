@@ -10,14 +10,15 @@ BULLET_SIZE = SIZE_STEP
 BULLET_SPEED = 30
 BULLET_PERIOD = 1
 
-ENEMY_PERIOD = 3
 ENEMY_SPEED = 20
 ENEMY_SIZE = 3 * SIZE_STEP
 ENEMY_DAMAGE_PERIOD = 1
 
 LEVEL_UP_DURATION = 2
 NO_SPAWN_RADIUS = W_WIDTH * 0.25
-
+STARTING_ENEMY_PERIOD = 4
+ENEMY_UP_TIME = 20
+ENEMY_PERIOD_STEP = 0.5
 
 play_state = {}
 
@@ -70,7 +71,7 @@ function play_state:update(dt)
 
     timer_enemy = timer_enemy + dt
 
-    if timer_enemy > ENEMY_PERIOD then
+    if timer_enemy > enemy_period then
         local angle = love.math.random(0, 2 * math.pi)
         local radius = love.math.random(NO_SPAWN_RADIUS, W_WIDTH/2)
 
@@ -91,6 +92,13 @@ function play_state:update(dt)
         }
 
         timer_enemy = 0
+    end
+
+    timer_enemy_up = timer_enemy_up + dt
+
+    if timer_enemy_up > ENEMY_UP_TIME and enemy_period > 1 then
+        enemy_period = enemy_period - ENEMY_PERIOD_STEP
+        timer_enemy_up = 0
     end
 
     for _, enemy in pairs(enemies) do 
@@ -252,6 +260,8 @@ function love.load()
 
     enemies = {}
 
+    timer_enemy_up = 0
+    enemy_period = STARTING_ENEMY_PERIOD
     timer_enemy = 0
 
     health = 10
