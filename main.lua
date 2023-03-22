@@ -1,3 +1,5 @@
+require 'enemy_spawner'
+
 DEBUG = true
 
 W_WIDTH, W_HEIGHT = love.graphics.getDimensions()
@@ -15,6 +17,7 @@ ENEMY_SIZE = 3 * SIZE_STEP
 ENEMY_DAMAGE_PERIOD = 1
 
 LEVEL_UP_DURATION = 2
+
 NO_SPAWN_RADIUS = W_WIDTH * 0.25
 STARTING_ENEMY_PERIOD = 4
 ENEMY_UP_TIME = 20
@@ -69,35 +72,12 @@ function play_state:update(dt)
         end
     end
 
-    timer_enemy = timer_enemy + dt
-
-    if timer_enemy > enemy_period then
-        local angle = love.math.random(0, 2 * math.pi)
-        local radius = love.math.random(NO_SPAWN_RADIUS, W_WIDTH/2)
-
-        local position = {
-            x = math.cos(angle) * radius + W_WIDTH/2,
-            y = math.sin(angle) * radius + W_HEIGHT/2 
-        }
-
-        enemies[#enemies + 1] = {
-            pos = position,
-            dir = normalize({
-                x = W_WIDTH / 2 - position.x,
-                y = W_HEIGHT / 2 - position.y
-            }),
-            dead = false,
-            size = ENEMY_SIZE,
-            damage_timer = 0
-        }
-
-        timer_enemy = 0
-    end
+    enemy_spawner:update(dt)
 
     timer_enemy_up = timer_enemy_up + dt
 
-    if timer_enemy_up > ENEMY_UP_TIME and enemy_period > 1 then
-        enemy_period = enemy_period - ENEMY_PERIOD_STEP
+    if timer_enemy_up > ENEMY_UP_TIME then
+        enemy_spawner:change_period(ENEMY_PERIOD_STEP)
         timer_enemy_up = 0
     end
 
@@ -261,8 +241,8 @@ function love.load()
     enemies = {}
 
     timer_enemy_up = 0
-    enemy_period = STARTING_ENEMY_PERIOD
-    timer_enemy = 0
+
+    enemy_spawner:init(enemies, STARTING_ENEMY_PERIOD)
 
     health = 10
 
