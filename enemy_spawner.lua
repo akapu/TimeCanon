@@ -27,7 +27,7 @@ function enemy_spawner:update(dt)
     end
 
     if self.timer > border then
-        local angle = love.math.random(0, 2 * math.pi)
+        local angle = love.math.random() * 2 * math.pi
         local radius = love.math.random(NO_SPAWN_RADIUS, W_WIDTH/2)
 
         local position = {
