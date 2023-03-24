@@ -213,6 +213,43 @@ function game_over_state:draw()
     love.graphics.setColor(1, 1, 1, 1)
 end
 
+level_up = {
+    timer = 0,
+    active = false,
+    alpha = 0
+}
+
+function level_up:activate()
+    self.active = true
+
+    rotation_speed_up(canon)
+end
+
+function level_up:update(dt)
+    if not self.active then
+        return
+    end
+
+    self.timer = self.timer + dt
+
+    if self.timer <= (LEVEL_UP_DURATION / 2) then
+        self.alpha = self.timer / (LEVEL_UP_DURATION / 2)
+    elseif self.timer < LEVEL_UP_DURATION then
+        local time_remaing = LEVEL_UP_DURATION - self.timer
+        self.alpha = time_remaing / (LEVEL_UP_DURATION / 2)
+    else
+        self.active = false
+        self.timer = 0
+        self.alpha = 0
+    end
+end
+
+function level_up:draw()
+    love.graphics.setColor(0, 1, 0, self.alpha)
+    love.graphics.rectangle('fill', 0, 0, W_WIDTH, W_HEIGHT)
+    love.graphics.setColor(1, 1, 1, 1)
+end
+
 function love.load()
     love.window.setMode(W_WIDTH, W_HEIGHT, {
         msaa = 2
@@ -261,43 +298,6 @@ function love.load()
 
     function state_machine:draw()
         self.state:draw()
-    end
-
-    level_up = {
-        timer = 0,
-        active = false,
-        alpha = 0
-    }
-
-    function level_up:activate()
-        self.active = true
-
-        rotation_speed_up(canon)
-    end
-
-    function level_up:update(dt)
-        if not self.active then
-            return
-        end
-
-        self.timer = self.timer + dt
-
-        if self.timer < (LEVEL_UP_DURATION / 2) then
-            self.alpha = self.timer / (LEVEL_UP_DURATION / 2)
-        elseif self.timer < LEVEL_UP_DURATION then
-            local time_remaing = LEVEL_UP_DURATION - self.timer
-            self.alpha = time_remaing / (LEVEL_UP_DURATION / 2)
-        else
-            self.active = false
-            self.timer = 0
-            self.alpha = 0
-        end
-    end
-
-    function level_up:draw()
-        love.graphics.setColor(0, 1, 0, self.alpha)
-        love.graphics.rectangle('fill', 0, 0, W_WIDTH, W_HEIGHT)
-        love.graphics.setColor(1, 1, 1, 1)
     end
 end
 
