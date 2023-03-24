@@ -74,6 +74,8 @@ function play_state:update(dt)
 
     enemy_spawner:update(dt)
 
+    level_up:update(dt)
+
     timer_enemy_up = timer_enemy_up + dt
 
     if timer_enemy_up > ENEMY_UP_TIME then
@@ -119,8 +121,6 @@ function play_state:update(dt)
                 enemy.damage_timer = 0
             end
         end
-
-        level_up:update(dt)
     end
 
     for i = 1, #enemies do
