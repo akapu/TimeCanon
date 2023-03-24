@@ -12,11 +12,11 @@ BULLET_SIZE = SIZE_STEP
 BULLET_SPEED = 50
 BULLET_PERIOD = 1
 
-ENEMY_SPEED = 20
+ENEMY_SPEED = 50
 ENEMY_SIZE = 3 * SIZE_STEP
 ENEMY_DAMAGE_PERIOD = 1
 
-LEVEL_UP_DURATION = 2
+LEVEL_UP_DURATION = 0.75
 
 NO_SPAWN_RADIUS = W_WIDTH * 0.25
 STARTING_ENEMY_PERIOD = 4
@@ -270,7 +270,7 @@ function love.load()
         },
         size = math.sqrt((WIDTH/2)^2 + (HEIGHT/2)^2),
         moving = false,
-        rotation_speed = math.pi/2
+        rotation_speed = math.pi/1.5
     }
 
     bullets = {}
