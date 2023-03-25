@@ -14,7 +14,6 @@ BULLET_PERIOD = 1
 
 ENEMY_SPEED = 15
 ENEMY_SIZE = 3 * SIZE_STEP
-ENEMY_DAMAGE_PERIOD = 1
 
 LEVEL_UP_DURATION = 0.75
 
@@ -107,18 +106,11 @@ function play_state:update(dt)
         end
 
         if collide(enemy, canon) then
-            enemy.dir = idle_dir
+            health = health - 1
+            enemy.dead = true
 
-            enemy.damage_timer = enemy.damage_timer + dt
-
-            if enemy.damage_timer > ENEMY_DAMAGE_PERIOD then
-                health = health - 1
-
-                if health == 0 then
-                    state_machine.state = game_over_state
-                end
-
-                enemy.damage_timer = 0
+            if health == 0 then
+                state_machine.state = game_over_state
             end
         end
     end
@@ -282,11 +274,6 @@ function love.load()
     enemy_spawner:init(enemies, STARTING_ENEMY_PERIOD)
 
     health = 10
-
-    idle_dir = {
-        x = 0,
-        y = 0
-    }
 
     state_machine = {
         state = play_state
