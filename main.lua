@@ -132,14 +132,6 @@ function play_state:update(dt)
         current_speed = current_speed + canon.rotation_speed
     end
 
-    if current_speed > 0 then
-        canon.rotation_direction = "clock"
-    elseif current_speed < 0 then
-        canon.rotation_direction = "counterclock"
-    else
-        canon.rotation_direction = "idle"
-    end
-
     angle = angle + current_speed * dt
 
     if math.abs(angle) > 2 * math.pi then
@@ -259,8 +251,7 @@ function love.load()
             y = W_HEIGHT / 2
         },
         size = math.sqrt((WIDTH/2)^2 + (HEIGHT/2)^2),
-        rotation_speed = math.pi/1.5,
-        rotation_direction = "idle"
+        rotation_speed = math.pi/1.5
     }
 
     bullets = {}
