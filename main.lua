@@ -203,8 +203,6 @@ level_up = {
 
 function level_up:activate()
     self.active = true
-
-    rotation_speed_up(canon)
 end
 
 function level_up:update(dt)
@@ -316,11 +314,6 @@ function normalize(vector)
     vector.y = vector.y / length
 
     return vector
-end
-
-function rotation_speed_up(canon)
-    local UPGRADE = math.pi / 24
-    canon.rotation_speed = canon.rotation_speed + UPGRADE
 end
 
 function distance(first, second)
