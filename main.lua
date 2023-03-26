@@ -25,11 +25,9 @@ ENEMY_PERIOD_STEP = 0.5
 play_state = {}
 
 function play_state:update(dt)
-    if not canon.moving then
-        timer = timer + dt
-    end
+    timer = timer + dt
 
-    if timer > BULLET_PERIOD and not canon.moving then
+    if timer > BULLET_PERIOD then
         local direction = {
             x = math.cos(angle),
             y = math.sin(angle)
@@ -261,8 +259,8 @@ function love.load()
             y = W_HEIGHT / 2
         },
         size = math.sqrt((WIDTH/2)^2 + (HEIGHT/2)^2),
-        moving = false,
-        rotation_speed = math.pi/1.5
+        rotation_speed = math.pi/1.5,
+        rotation_direction = "idle"
     }
 
     bullets = {}
