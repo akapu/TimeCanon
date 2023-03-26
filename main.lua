@@ -8,7 +8,7 @@ HEIGHT = 25
 
 SIZE_STEP = 5
 
-BULLET_SIZE = SIZE_STEP
+BULLET_STARTING_SIZE = SIZE_STEP
 BULLET_SPEED = 60
 BULLET_PERIOD = 1
 
@@ -35,12 +35,12 @@ function play_state:update(dt)
 
         bullets[#bullets + 1] = {
             pos = {
-                x = W_WIDTH/2 + direction.x * (WIDTH/2 - BULLET_SIZE/2),
-                y = W_HEIGHT/2 + direction.y * (WIDTH/2 - BULLET_SIZE/2)
+                x = W_WIDTH/2 + direction.x * (WIDTH/2 - canon.bullet_size/2),
+                y = W_HEIGHT/2 + direction.y * (WIDTH/2 - canon.bullet_size/2)
             },
             dir = direction,
             to_remove = false,
-            size = BULLET_SIZE
+            size = canon.bullet_size
         }
         
         timer = 0
@@ -203,6 +203,8 @@ level_up = {
 
 function level_up:activate()
     self.active = true
+
+    bullet_size_up(canon)
 end
 
 function level_up:update(dt)
@@ -249,7 +251,8 @@ function love.load()
             y = W_HEIGHT / 2
         },
         size = math.sqrt((WIDTH/2)^2 + (HEIGHT/2)^2),
-        rotation_speed = math.pi/1.5
+        rotation_speed = math.pi/1.5,
+        bullet_size = BULLET_STARTING_SIZE
     }
 
     bullets = {}
@@ -297,6 +300,10 @@ end
 
 function love.draw()
     state_machine:draw()
+end
+
+function bullet_size_up(canon)
+    canon.bullet_size = canon.bullet_size + SIZE_STEP
 end
 
 function collide(first, second)
