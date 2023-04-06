@@ -6,14 +6,16 @@ W_WIDTH, W_HEIGHT = love.graphics.getDimensions()
 WIDTH = 75
 HEIGHT = 25
 
-SIZE_STEP = 5
+BASE_SIZE = 5
 
-BULLET_STARTING_SIZE = SIZE_STEP
+BULLET_STARTING_SIZE = BASE_SIZE
 BULLET_SPEED = 60
 BULLET_PERIOD = 1
+BULLET_HP = 1
 
 ENEMY_SPEED = 15
-ENEMY_SIZE = 3 * SIZE_STEP
+ENEMY_HP = 3
+ENEMY_SIZE = BASE_SIZE + ENEMY_HP - 1 
 
 LEVEL_UP_DURATION = 0.75
 
@@ -40,7 +42,8 @@ function play_state:update(dt)
             },
             dir = direction,
             to_remove = false,
-            size = canon.bullet_size
+            size = canon.bullet_size,
+            hp = canon.bullet_hp
         }
         
         timer = 0
@@ -86,14 +89,16 @@ function play_state:update(dt)
 
         for _, bullet in pairs(bullets) do
             if collide(enemy, bullet) then
-                local diff = enemy.size - bullet.size
+                local diff = enemy.hp - bullet.hp
 
                 if diff < 0 then
                     enemy.dead = true
-                    bullet.size = math.abs(diff)
+                    bullet.hp = math.abs(diff)
+                    bullet.size = BASE_SIZE + bullet.hp - 1
                 elseif diff > 0 then
                     bullet.to_remove = true
-                    enemy.size = math.abs(diff)
+                    enemy.hp = math.abs(diff)
+                    enemy.size = BASE_SIZE + enemy.hp - 1
                 else
                     enemy.dead = true
                     bullet.to_remove = true
@@ -252,7 +257,8 @@ function love.load()
         },
         size = math.sqrt((WIDTH/2)^2 + (HEIGHT/2)^2),
         rotation_speed = math.pi/1.5,
-        bullet_size = BULLET_STARTING_SIZE
+        bullet_size = BULLET_STARTING_SIZE,
+        bullet_hp = BULLET_HP
     }
 
     bullets = {}
@@ -303,7 +309,8 @@ function love.draw()
 end
 
 function bullet_size_up(canon)
-    canon.bullet_size = canon.bullet_size + SIZE_STEP
+    canon.bullet_size = canon.bullet_size + 1
+    canon.bullet_hp = canon.bullet_hp + 1
 end
 
 function collide(first, second)

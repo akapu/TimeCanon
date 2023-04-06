@@ -42,7 +42,8 @@ function enemy_spawner:update(dt)
                 y = W_HEIGHT / 2 - position.y
             }),
             dead = false,
-            size = ENEMY_SIZE
+            size = ENEMY_SIZE,
+            hp = ENEMY_HP
         }
 
         self.timer = 0
