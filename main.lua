@@ -17,6 +17,9 @@ ENEMY_SPEED = 15
 ENEMY_HP = 3
 ENEMY_SIZE = BASE_SIZE + ENEMY_HP - 1 
 
+UPGRADE_WIDTH = 100
+UPGRADE_HEIGHT = 100
+
 LEVEL_UP_DURATION = 0.75
 
 NO_SPAWN_RADIUS = W_WIDTH * 0.25
@@ -25,6 +28,9 @@ ENEMY_UP_TIME = 20
 ENEMY_PERIOD_STEP = 0.5
 
 play_state = {}
+
+function play_state:init()
+end
 
 function play_state:update(dt)
     timer = timer + dt
@@ -113,7 +119,8 @@ function play_state:update(dt)
             enemy.dead = true
 
             if health == 0 then
-                state_machine.state = game_over_state
+                state_machine:pop()
+                state_machine:push(game_over_state)
             end
         end
     end
@@ -142,6 +149,7 @@ function play_state:update(dt)
     if math.abs(angle) > 2 * math.pi then
         if angle > 0 then
             level_up:activate(canon)
+            state_machine:push(choose_update_state)
         end
 
         angle = 0
@@ -170,7 +178,49 @@ function play_state:draw()
     love.graphics.pop()
 
     love.graphics.print("health: " .. health, 0, 0, 0, 2)
+end
 
+choose_update_state = {
+    Y = W_HEIGHT/2 - UPGRADE_HEIGHT/2,
+    SELECT_WIDTH = 10,
+    select = 1
+}
+
+function choose_update_state:init()
+    self.upgrade_list = {bullet_size_upgrade, }
+    self.BLOCK_WIDTH = #self.upgrade_list * UPGRADE_WIDTH*1.5 - UPGRADE_WIDTH/2
+end
+
+function choose_update_state:update(dt)
+
+    if love.keyboard.keysPressed['return'] then
+        self.upgrade_list[self.select]:upgrade()
+        state_machine:pop()
+    end
+
+    level_up:update(dt)
+end
+
+function choose_update_state:calculate_x(pos)
+    return W_WIDTH/2 - self.BLOCK_WIDTH/2 + (pos-1) * UPGRADE_WIDTH*1.5
+end
+
+function choose_update_state:draw()
+    for i, upgrade in ipairs(self.upgrade_list) do
+        love.graphics.push()
+        love.graphics.translate(self:calculate_x(i), self.Y)
+        upgrade:draw()
+        love.graphics.pop()
+    end
+
+    love.graphics.push()
+    love.graphics.translate(self:calculate_x(self.select), self.Y)
+    love.graphics.setColor(1, 0 , 0, 1)
+    local X = UPGRADE_WIDTH - self.SELECT_WIDTH
+    love.graphics.rectangle('fill', X, 0, self.SELECT_WIDTH, UPGRADE_HEIGHT)
+    local Y = UPGRADE_HEIGHT - self.SELECT_WIDTH
+    love.graphics.rectangle('fill', 0, Y, UPGRADE_WIDTH, self.SELECT_WIDTH)
+    love.graphics.pop()
     level_up:draw()
 end
 
@@ -179,6 +229,9 @@ game_over_state = {
     time_to_transition = 2,
     alpha = 0
 }
+
+function game_over_state:init()
+end
 
 function game_over_state:update(dt)
     if self.timer < self.time_to_transition then
@@ -208,8 +261,6 @@ level_up = {
 
 function level_up:activate()
     self.active = true
-
-    bullet_size_up(canon)
 end
 
 function level_up:update(dt)
@@ -272,15 +323,26 @@ function love.load()
     health = 10
 
     state_machine = {
-        state = play_state
+        state_stack = {play_state, }
     }
 
+    function state_machine:push(state)
+        state:init()
+        table.insert(self.state_stack, state)
+    end
+
+    function state_machine:pop()
+        table.remove(self.state_stack)
+    end
+
     function state_machine:update(dt)
-        self.state:update(dt)
+        self.state_stack[#self.state_stack]:update(dt)
     end
 
     function state_machine:draw()
-        self.state:draw()
+        for i = #self.state_stack, 1, -1 do
+            self.state_stack[i]:draw()
+        end
     end
 end
 
@@ -308,7 +370,14 @@ function love.draw()
     state_machine:draw()
 end
 
-function bullet_size_up(canon)
+bullet_size_upgrade = {}
+
+function bullet_size_upgrade:draw()
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.rectangle('fill', 0, 0, UPGRADE_WIDTH, UPGRADE_HEIGHT)
+end
+
+function bullet_size_upgrade:upgrade()
     canon.bullet_size = canon.bullet_size + 1
     canon.bullet_hp = canon.bullet_hp + 1
 end
