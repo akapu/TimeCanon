@@ -382,6 +382,19 @@ function bullet_size_upgrade:upgrade()
     canon.bullet_hp = canon.bullet_hp + 1
 end
 
+bullet_frequency_upgrade = {}
+
+function bullet_frequency_upgrade:draw()
+    love.graphics.setColor(0, 1, 0, 1)
+    love.graphics.rectangle('fill', 0, 0, UPGRADE_WIDTH, UPGRADE_HEIGHT)
+end
+
+function bullet_frequency_upgrade:upgrade()
+    local STEP = 0.1
+
+    BULLET_PERIOD = BULLET_PERIOD - STEP
+end
+
 function collide(first, second)
     if distance(first.pos, second.pos) < first.size + second.size then
         return true
