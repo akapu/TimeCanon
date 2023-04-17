@@ -183,12 +183,15 @@ end
 choose_update_state = {
     Y = W_HEIGHT/2 - UPGRADE_HEIGHT/2,
     SELECT_WIDTH = 10,
-    select = 1
+    CHANGE_PERIOD = 1
 }
 
 function choose_update_state:init()
-    self.upgrade_list = {bullet_size_upgrade, }
+    self.upgrade_list = {bullet_size_upgrade, bullet_frequency_upgrade}
     self.BLOCK_WIDTH = #self.upgrade_list * UPGRADE_WIDTH*1.5 - UPGRADE_WIDTH/2
+    self.select = 1
+    self.change_timer = 0
+    self.first_change = true
 end
 
 function choose_update_state:update(dt)
@@ -196,6 +199,40 @@ function choose_update_state:update(dt)
     if love.keyboard.keysPressed['return'] then
         self.upgrade_list[self.select]:upgrade()
         state_machine:pop()
+    end
+
+    local direction = 0
+
+    if love.keyboard.keysPressed['right'] then
+        direction = direction + 1
+    end
+
+    if love.keyboard.keysPressed['left'] then
+        direction = direction - 1
+    end
+
+    if direction ~= 0 then
+        self.change_timer = self.change_timer + dt
+
+        if self.change_timer > self.CHANGE_PERIOD or self.first_change then
+            self.select = self.select + direction
+
+            local last = #self.upgrade_list
+            if self.select < 1 then
+                self.select = last
+            end
+            if self.select > last then
+                self.select = 1
+            end
+            
+            self.change_timer = 0
+
+            self.first_change = false
+        end
+    else
+        self.change_timer = 0
+
+        self.first_change = true
     end
 
     level_up:update(dt)
