@@ -10,7 +10,7 @@ BASE_SIZE = 5
 
 BULLET_STARTING_SIZE = BASE_SIZE
 BULLET_SPEED = 60
-BULLET_PERIOD = 1
+bullet_period = 1
 BULLET_HP = 1
 
 ENEMY_SPEED = 15
@@ -19,6 +19,7 @@ ENEMY_SIZE = BASE_SIZE + ENEMY_HP - 1
 
 UPGRADE_WIDTH = 100
 UPGRADE_HEIGHT = 100
+BULLET_HP_LIMIT = 10
 
 LEVEL_UP_DURATION = 0.75
 
@@ -26,6 +27,8 @@ NO_SPAWN_RADIUS = W_WIDTH * 0.25
 STARTING_ENEMY_PERIOD = 4
 ENEMY_UP_TIME = 20
 ENEMY_PERIOD_STEP = 0.5
+
+SCORE_PERIOD = 1
 
 play_state = {}
 
@@ -35,7 +38,14 @@ end
 function play_state:update(dt)
     timer = timer + dt
 
-    if timer > BULLET_PERIOD then
+    score_timer = score_timer + dt
+
+    if score_timer > SCORE_PERIOD then
+        score = score + 1
+        score_timer = 0
+    end
+
+    if timer > bullet_period then
         local direction = {
             x = math.cos(angle),
             y = math.sin(angle)
@@ -187,7 +197,11 @@ choose_update_state = {
 }
 
 function choose_update_state:init()
-    self.upgrade_list = {bullet_size_upgrade, bullet_frequency_upgrade}
+    self.upgrade_list = {bullet_frequency_upgrade}
+    if canon.bullet_hp < BULLET_HP_LIMIT then
+        self.upgrade_list[#self.upgrade_list + 1] = bullet_size_upgrade
+    end
+
     self.BLOCK_WIDTH = #self.upgrade_list * UPGRADE_WIDTH*1.5 - UPGRADE_WIDTH/2
     self.select = 1
     self.change_timer = 0
@@ -338,6 +352,10 @@ function love.load()
 
     timer = 0
 
+    score = 0
+
+    score_timer = 0
+
     canon = {
         pos = {
             x = W_WIDTH / 2,
@@ -405,6 +423,10 @@ end
 
 function love.draw()
     state_machine:draw()
+
+    love.graphics.setColor(1, 1, 1, 1)
+
+    love.graphics.print("score: " .. score, W_WIDTH/2 - 100, 0 , 0, 2)
 end
 
 bullet_size_upgrade = {}
@@ -427,9 +449,7 @@ function bullet_frequency_upgrade:draw()
 end
 
 function bullet_frequency_upgrade:upgrade()
-    local STEP = 0.1
-
-    BULLET_PERIOD = BULLET_PERIOD - STEP
+    bullet_period = bullet_period * 0.95
 end
 
 function collide(first, second)
