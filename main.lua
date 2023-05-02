@@ -19,7 +19,7 @@ ENEMY_SIZE = BASE_SIZE + ENEMY_HP - 1
 
 UPGRADE_WIDTH = 100
 UPGRADE_HEIGHT = 100
-BULLET_HP_LIMIT = 10
+BULLET_HP_LIMIT = 5
 
 LEVEL_UP_DURATION = 0.75
 
@@ -449,7 +449,7 @@ function bullet_frequency_upgrade:draw()
 end
 
 function bullet_frequency_upgrade:upgrade()
-    bullet_period = bullet_period * 0.95
+    bullet_period = bullet_period * 0.99
 end
 
 function collide(first, second)
